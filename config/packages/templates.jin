@@ -8,8 +8,7 @@
 	;
 
 	paths = {
-		"pages":  "resources/pages",
-		"emails": "resources/emails"
+		"pages": "resources/pages"
 	}
 
 [routing]

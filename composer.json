@@ -20,7 +20,8 @@
     "extra": {
         "opus": {
             "hiraeth/app": {
-                "config": ""
+                "config": "",
+                "pages": "resources"
             }
         }
     }
