@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "hiraeth/app": "^2.0"
+        "hiraeth/app": "^2.0",
+        "ralouphie/mimey": "^2.1"
     },
     "autoload": {
         "classmap": ["src/"]

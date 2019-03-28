@@ -5,6 +5,7 @@ namespace Hiraeth\Templates;
 use Hiraeth\Routing;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\StreamFactoryInterface as StreamFactory;
+use Mimey\MimeTypes;
 
 /**
  *
@@ -20,9 +21,10 @@ class TemplateResponder implements Routing\ResponderInterface
 	/**
 	 *
 	 */
-	public function __construct(StreamFactory $stream_factory)
+	public function __construct(StreamFactory $stream_factory, MimeTypes $mime_types)
 	{
 		$this->streamFactory = $stream_factory;
+		$this->mimeTypes     = $mime_types;
 	}
 
 
@@ -31,9 +33,12 @@ class TemplateResponder implements Routing\ResponderInterface
 	 */
 	public function __invoke(Routing\Resolver $resolver): Response
 	{
+		$template  = $resolver->getResult();
+		$mime_type = $this->mimeTypes->getMimeType($template->getExtension());
+
 		return $resolver->getResponse()
-			->withHeader('Content-Type', 'text/html')
-			->withBody($this->streamFactory->createStream($resolver->getResult()->render()))
+			->withHeader('Content-Type', $mime_type ?: 'text/html')
+			->withBody($this->streamFactory->createStream(->render()))
 		;
 	}
 

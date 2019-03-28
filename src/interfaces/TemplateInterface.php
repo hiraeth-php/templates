@@ -22,6 +22,12 @@ interface TemplateInterface
 	/**
 	 *
 	 */
+	public function getExtension(): string;
+
+
+	/**
+	 *
+	 */
 	public function set($name, $value): TemplateInterface;
 
 
