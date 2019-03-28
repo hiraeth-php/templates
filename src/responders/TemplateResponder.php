@@ -38,7 +38,7 @@ class TemplateResponder implements Routing\ResponderInterface
 
 		return $resolver->getResponse()
 			->withHeader('Content-Type', $mime_type ?: 'text/html')
-			->withBody($this->streamFactory->createStream(->render()))
+			->withBody($this->streamFactory->createStream($template->render()))
 		;
 	}
 
