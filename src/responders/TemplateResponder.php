@@ -3,9 +3,9 @@
 namespace Hiraeth\Templates;
 
 use Hiraeth\Routing;
+use Hiraeth\Mime\MimeTypesInterface as MimeTypes;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\StreamFactoryInterface as StreamFactory;
-use Mimey\MimeTypes;
 
 /**
  *
