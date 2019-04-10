@@ -21,7 +21,8 @@
         "opus": {
             "hiraeth/app": {
                 "config": "",
-                "pages": "resources/pages"
+                "pages": "resources/pages",
+                "layouts": "resources/layouts"
             }
         }
     }
