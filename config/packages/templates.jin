@@ -8,7 +8,8 @@
 	;
 
 	paths = {
-		"pages": "resources/pages"
+		"pages": "resources/pages",
+		"layouts": "resources/layouts"
 	}
 
 [routing]
