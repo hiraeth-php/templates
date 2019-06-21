@@ -5,7 +5,7 @@ namespace Hiraeth\Templates;
 /**
  *
  */
-interface TemplateManagerInterface
+interface ManagerInterface
 {
 	/**
 	 *

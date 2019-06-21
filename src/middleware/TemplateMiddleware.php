@@ -18,7 +18,7 @@ class TemplateMiddleware implements MiddlewareInterface
 	/**
 	 *
 	 */
-	public function __construct(TemplateManagerInterface $manager, StreamFactory $stream_factory)
+	public function __construct(ManagerInterface $manager, StreamFactory $stream_factory)
 	{
 		$this->manager       = $manager;
 		$this->streamFactory = $stream_factory;
