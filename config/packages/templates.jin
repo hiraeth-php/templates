@@ -11,14 +11,3 @@
 		"pages": "resources/pages",
 		"layouts": "resources/layouts"
 	}
-
-[routing]
-
-	;
-	; Responders are responsible for taking the return value of the route callback and converting
-	; it into a proper PSR-7 `ResponseInterface` object.
-	;
-
-	responders = [
-		"Hiraeth\Templates\TemplateResponder"
-	]

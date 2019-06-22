@@ -1,0 +1,19 @@
+[responder]
+
+	;
+	; Whether or not this responder is disabled
+	;
+
+	disabled = false
+
+	;
+	; The priority for the responder
+	;
+
+	priority = 15
+
+	;
+	; The responder class
+	;
+
+	class = Hiraeth\Templates\TemplateResponder
