@@ -34,9 +34,14 @@ class TemplateResponder implements Routing\ResponderInterface
 	public function __invoke(Routing\Resolver $resolver): Response
 	{
 		$template  = $resolver->getResult();
+		$response  = $resolver->getResponse();
 		$mime_type = $this->mimeTypes->getMimeType($template->getExtension());
 
-		return $resolver->getResponse()
+		if ($template->get('error')) {
+			$response = $response->withStatus(400);
+		}
+
+		return $response
 			->withHeader('Content-Type', $mime_type ?: 'text/html')
 			->withBody($this->streamFactory->createStream($template->render()))
 		;
@@ -51,3 +56,4 @@ class TemplateResponder implements Routing\ResponderInterface
 		return $resolver->getResult() instanceof TemplateInterface;
 	}
 }
+
