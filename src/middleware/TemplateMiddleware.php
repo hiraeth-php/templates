@@ -48,7 +48,7 @@ class TemplateMiddleware implements MiddlewareInterface
 			if ($this->manager->has($path)) {
 				$response = $response->withStatus(200);
 				$response = $response->withBody($this->streamFactory->createStream(
-					$this->manager->load($path)->render()
+					$this->manager->load($path, ['request' => $request])->render()
 				));
 
 			} elseif ($this->manager->has($alt)) {
