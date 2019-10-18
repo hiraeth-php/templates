@@ -49,10 +49,12 @@ class TemplateMiddleware implements MiddlewareInterface
 			$alt  = str_replace('/' . basename($alt),  '/@' . basename($alt),  $alt);
 
 			if ($this->manager->has($path)) {
-				$response = $response->withStatus(200);
-				$response = $response->withBody($this->streamFactory->createStream(
-					$this->manager->load($path, ['request' => $request])->render()
-				));
+				if ($is_dir || basename($path) != '@index.html') {
+					$response = $response->withStatus(200);
+					$response = $response->withBody($this->streamFactory->createStream(
+						$this->manager->load($path, ['request' => $request])->render()
+					));
+				}
 
 			} elseif ($this->manager->has($alt)) {
 				$response = $response->withStatus(301);
