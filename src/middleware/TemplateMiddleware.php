@@ -33,8 +33,8 @@ class TemplateMiddleware implements MiddlewareInterface
 		$response = $handler->handle($request);
 
 		if ($response->getStatusCode() == 404) {
-			$uri_path = $request->getUri()->getPath();
-			$is_dir   = substr($uri_path, -1) == '/';
+			$uri_path  = $request->getUri()->getPath();
+			$is_dir    = substr($uri_path, -1, 1) == '/';
 
 			if ($is_dir) {
 				$path = '@pages' . $uri_path . 'index.html';
@@ -44,6 +44,9 @@ class TemplateMiddleware implements MiddlewareInterface
 				$path = '@pages' . $uri_path . '.html';
 				$alt  = '@pages' . $uri_path . '/index.html';
 			}
+
+			$path = str_replace('/' . basename($path), '/@' . basename($path), $path);
+			$alt  = str_replace('/' . basename($alt),  '/@' . basename($alt),  $alt);
 
 			if ($this->manager->has($path)) {
 				$response = $response->withStatus(200);
