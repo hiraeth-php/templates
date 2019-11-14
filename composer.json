@@ -2,6 +2,7 @@
     "name": "hiraeth/templates",
     "description": "Template abstraction for the Hiraeth Nano Framework",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "license": "MIT",
     "authors": [
         {

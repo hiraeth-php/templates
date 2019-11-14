@@ -3,14 +3,14 @@
 namespace Hiraeth\Templates;
 
 use Hiraeth\Routing;
-use Hiraeth\Mime\MimeTypesInterface as MimeTypes;
+use Hiraeth\Mime\MimeTypes;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\StreamFactoryInterface as StreamFactory;
 
 /**
  *
  */
-class TemplateResponder implements Routing\ResponderInterface
+class TemplateResponder implements Routing\Responder
 {
 	/**
 	 * A mime types service
