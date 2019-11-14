@@ -16,9 +16,25 @@ use Psr\Http\Message\ResponseFactoryInterface as ResponseFactory;
 class TemplateMiddleware implements MiddlewareInterface
 {
 	/**
+	 * The template manager
+	 *
+	 * @var Manager|null
+	 */
+	protected $manager = NULL;
+
+
+	/**
+	 * A PSR-7 stream factory for creating streams
+	 *
+	 * @var StreamFactory|null
+	 */
+	protected $streamFactory = NULL;
+
+
+	/**
 	 *
 	 */
-	public function __construct(ManagerInterface $manager, StreamFactory $stream_factory)
+	public function __construct(Manager $manager, StreamFactory $stream_factory)
 	{
 		$this->manager       = $manager;
 		$this->streamFactory = $stream_factory;

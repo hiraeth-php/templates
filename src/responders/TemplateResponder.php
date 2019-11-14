@@ -13,7 +13,17 @@ use Psr\Http\Message\StreamFactoryInterface as StreamFactory;
 class TemplateResponder implements Routing\ResponderInterface
 {
 	/**
+	 * A mime types service
 	 *
+	 * @var MimeTypes|null
+	 */
+	protected $mimeTypes = NULL;
+
+
+	/**
+	 * A PSR-7 stream factory for creating streams
+	 *
+	 * @var StreamFactory|null
 	 */
 	protected $streamFactory = NULL;
 
@@ -21,10 +31,10 @@ class TemplateResponder implements Routing\ResponderInterface
 	/**
 	 *
 	 */
-	public function __construct(StreamFactory $stream_factory, MimeTypes $mime_types)
+	public function __construct(MimeTypes $mime_types, StreamFactory $stream_factory)
 	{
-		$this->streamFactory = $stream_factory;
 		$this->mimeTypes     = $mime_types;
+		$this->streamFactory = $stream_factory;
 	}
 
 
@@ -53,7 +63,6 @@ class TemplateResponder implements Routing\ResponderInterface
 	 */
 	public function match(Routing\Resolver $resolver): bool
 	{
-		return $resolver->getResult() instanceof TemplateInterface;
+		return $resolver->getResult() instanceof Template;
 	}
 }
-

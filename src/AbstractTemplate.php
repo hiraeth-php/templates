@@ -3,18 +3,20 @@
 namespace Hiraeth\Templates;
 
 /**
- *
+ * An abstract template that provides basic data management
  */
-abstract class AbstractTemplate implements TemplateInterface
+abstract class AbstractTemplate implements Template
 {
 	/**
+	 * The template data
 	 *
+	 * @var array
 	 */
 	protected $data = array();
 
 
 	/**
-	 *
+	 * {@inheritDoc}
 	 */
 	public function get($name)
 	{
@@ -27,7 +29,7 @@ abstract class AbstractTemplate implements TemplateInterface
 
 
 	/**
-	 *
+	* {@inheritDoc}
 	 */
 	public function getAll(): array
 	{
@@ -36,9 +38,9 @@ abstract class AbstractTemplate implements TemplateInterface
 
 
 	/**
-	 *
+	 * {@inheritDoc}
 	 */
-	public function set($name, $value): TemplateInterface
+	public function set($name, $value): Template
 	{
 		$this->data[$name] = $value;
 
@@ -47,9 +49,9 @@ abstract class AbstractTemplate implements TemplateInterface
 
 
 	/**
-	 *
+	 * {@inheritDoc}
 	 */
-	public function setAll(array $data): TemplateInterface
+	public function setAll(array $data): Template
 	{
 		$this->data = $data + $this->data;
 
