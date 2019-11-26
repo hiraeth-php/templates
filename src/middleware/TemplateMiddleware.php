@@ -66,10 +66,13 @@ class TemplateMiddleware implements MiddlewareInterface
 
 			if ($this->manager->has($path)) {
 				if ($is_dir || basename($path) != '@index.html') {
-					$response = $response->withStatus(200);
-					$response = $response->withBody($this->streamFactory->createStream(
-						$this->manager->load($path, ['request' => $request])->render()
-					));
+					$response = $response
+						->withStatus(200)
+						->withHeader('Content-Type', 'text/html; charset=utf-8')
+						->withBody($this->streamFactory->createStream(
+							$this->manager->load($path, ['request' => $request])->render()
+						))
+					;
 				}
 
 			} elseif ($this->manager->has($alt)) {
