@@ -2,7 +2,7 @@
 
 namespace Hiraeth\Templates;
 
-use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\Middleware as Middleware;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -11,9 +11,9 @@ use Psr\Http\Message\StreamFactoryInterface as StreamFactory;
 use Psr\Http\Message\ResponseFactoryInterface as ResponseFactory;
 
 /**
- *
+ * {@inheritDoc}
  */
-class TemplateMiddleware implements MiddlewareInterface
+class TemplateMiddleware implements Middleware
 {
 	/**
 	 * The template manager
@@ -32,7 +32,7 @@ class TemplateMiddleware implements MiddlewareInterface
 
 
 	/**
-	 *
+	 * Create a new instance of the middleware
 	 */
 	public function __construct(Manager $manager, StreamFactory $stream_factory)
 	{
@@ -42,7 +42,7 @@ class TemplateMiddleware implements MiddlewareInterface
 
 
 	/**
-	 *
+	 * {@inheritDoc}
 	 */
 	public function process(Request $request, RequestHandler $handler): Response
 	{

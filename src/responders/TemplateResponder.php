@@ -3,12 +3,12 @@
 namespace Hiraeth\Templates;
 
 use Hiraeth\Routing;
-use Hiraeth\Mime\MimeTypes;
+use Hiraeth\Utils\MimeTypes;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\StreamFactoryInterface as StreamFactory;
 
 /**
- *
+ * {@inheritDoc}
  */
 class TemplateResponder implements Routing\Responder
 {
@@ -29,7 +29,7 @@ class TemplateResponder implements Routing\Responder
 
 
 	/**
-	 *
+	 * Create a new instance of the responder
 	 */
 	public function __construct(MimeTypes $mime_types, StreamFactory $stream_factory)
 	{
@@ -39,7 +39,7 @@ class TemplateResponder implements Routing\Responder
 
 
 	/**
-	 *
+	 * {@inheritDoc}
 	 */
 	public function __invoke(Routing\Resolver $resolver): Response
 	{
@@ -59,7 +59,7 @@ class TemplateResponder implements Routing\Responder
 
 
 	/**
-	 *
+	 * {@inheritDoc}
 	 */
 	public function match(Routing\Resolver $resolver): bool
 	{
