@@ -2,7 +2,7 @@
 
 namespace Hiraeth\Templates;
 
-use Psr\Http\Server\Middleware as Middleware;
+use Psr\Http\Server\MiddlewareInterface as Middleware;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 use Psr\Http\Message\ResponseInterface as Response;
