@@ -28,7 +28,7 @@
         "opus": {
             "hiraeth/app": {
                 "config": "",
-		        "resources": ""
+                "resources": ""
             }
         }
     }
