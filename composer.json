@@ -11,6 +11,9 @@
             "role":  "Lead Architect / Developer"
         }
     ],
+    "autoload": {
+        "classmap": ["src/"]
+    },
     "require": {
         "hiraeth/app": "^2.0",
         "hiraeth/mime-types": "^2.0"
@@ -21,9 +24,6 @@
         "hiraeth/diactoros": "^2.0",
         "hiraeth/routing": "^2.0",
         "hiraeth/app": "^2.0"
-    },
-    "autoload": {
-        "classmap": ["src/"]
     },
     "type": "opus-package",
     "extra": {
