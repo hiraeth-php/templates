@@ -1,0 +1,19 @@
+[adapter]
+
+	;
+	; Whether or not this adapter is disabled
+	;
+
+	disabled = false
+
+	;
+	; The priority for the adapter
+	;
+
+	priority = 15
+
+	;
+	; The adapter class
+	;
+
+	class = Hiraeth\Templates\TemplateAdapter
