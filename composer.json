@@ -15,15 +15,16 @@
         "classmap": ["src/"]
     },
     "require": {
-        "hiraeth/app": "^2.0",
-        "hiraeth/mime-types": "^2.0"
+        "hiraeth/app": "^3.0",
+        "hiraeth/mime-types": "^3.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.0",
-        "psr/http-server-middleware": "^1.0",
-        "hiraeth/diactoros": "^2.0",
-        "hiraeth/routing": "^2.0",
-        "hiraeth/app": "^2.0"
+	"phpunit/phpunit": "^8.5",
+        "hiraeth/app": "^3.0",
+        "hiraeth/routing": "^3.0",
+        "hiraeth/diactoros": "^3.0",
+        "psr/http-server-middleware": "^1.0"
     },
     "type": "opus-package",
     "extra": {
