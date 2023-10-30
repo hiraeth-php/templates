@@ -30,10 +30,10 @@ class TemplateAdapter implements Routing\Adapter
 	public function __invoke(Routing\Resolver $resolver): callable
 	{
 		return function() use ($resolver) {
-			if ($this->manager->has($resolver->getTarget())) {
-				return $this->manager->load($resolver->getTarget(), [
-					'request' => $resolver->getRequest(),
-					'params'  => $resolver->getParameters()
+			if ($this->manager->has($resolver->getRoute()->getTarget())) {
+				return $this->manager->load($resolver->getRoute()->getTarget(), [
+					'route'   => $resolver->getRoute(),
+					'request' => $resolver->getRequest()
 				]);
 			}
 		};
@@ -45,7 +45,7 @@ class TemplateAdapter implements Routing\Adapter
 	 */
 	public function match(Routing\Resolver $resolver): bool
 	{
-		if (is_string($target = $resolver->getTarget())) {
+		if (is_string($target = $resolver->getRoute()->getTarget())) {
 			return strpos($target, '@') === 0;
 		}
 
