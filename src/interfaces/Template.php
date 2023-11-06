@@ -8,6 +8,12 @@ namespace Hiraeth\Templates;
 interface Template
 {
 	/**
+	 * Must be an alias to render()
+	 */
+	public function __toString(): string;
+
+
+	/**
 	 * Get the template's data referred to by a given name
 	 *
 	 * @param string $name The name of the data variable

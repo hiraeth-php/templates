@@ -18,6 +18,15 @@ abstract class AbstractTemplate implements Template
 	/**
 	 * {@inheritDoc}
 	 */
+	public function __toString(): string
+	{
+		return $this->render();
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get(string $name)
 	{
 		if (array_key_exists($name, $this->data)) {
