@@ -61,8 +61,13 @@ class TemplateMiddleware implements Middleware
 				$alt  = '@pages' . $uri_path . '/index.html';
 			}
 
-			$path = str_replace('/' . basename($path), '/@' . basename($path), $path);
-			$alt  = str_replace('/' . basename($alt),  '/@' . basename($alt),  $alt);
+			if ($request->getHeaderLine('HX-Request')) {
+				$path = str_replace('/' . basename($path), '/%' . basename($path), $path);
+				$alt  = str_replace('/' . basename($alt),  '/%' . basename($alt),  $alt);
+			} else {
+				$path = str_replace('/' . basename($path), '/@' . basename($path), $path);
+				$alt  = str_replace('/' . basename($alt),  '/@' . basename($alt),  $alt);
+			}
 
 			if ($this->manager->has($path)) {
 				if ($is_dir || basename($path) != '@index.html') {
