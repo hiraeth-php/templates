@@ -132,7 +132,7 @@ class TemplateMiddleware implements Middleware
 
 						$matches  = array_combine($matcher['mapping'], $matches);
 
-						if ($request->getHeaderLine('X-Requested-With') == 'xmlhttprequest') {
+						if ($request->getHeaderLine('HX-Request')) {
 							$template = '%' . $template . '.html';
 						} else {
 							$template = '@' . $template . '.html';
