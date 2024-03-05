@@ -14,6 +14,14 @@ interface Template
 
 
 	/**
+	 * Get a block from the template
+	 *
+	 * This method should throw an exception if blocks are not supported
+	 */
+	public function block(string $name, array $context = array());
+
+
+	/**
 	 * Get the template's data referred to by a given name
 	 *
 	 * @param string $name The name of the data variable

@@ -33,10 +33,19 @@ class TemplateResponder implements Routing\Responder
 	 */
 	public function __invoke(Routing\Resolver $resolver): Response
 	{
+		/**
+ *		 * @var Template
+ *		 */
 		$template  = $resolver->getResult();
 		$response  = $resolver->getResponse();
 		$stream    = $this->streams->createStream($template->render());
-		$mime_type = $resolver->getType($stream);
+		$mime_type = $resolver->getType(
+			$stream,
+			[
+				'html' => 'text/html',
+			][$template->getExtension()] ?? 'text/plain;charset=UTF-8',
+			TRUE
+		);
 
 		return $response
 			->withHeader('Content-Type', $mime_type)
