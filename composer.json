@@ -22,8 +22,7 @@
         "phpstan/phpstan": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "hiraeth/diactoros": "^2.0",
-        "hiraeth/routing": "^2.0",
-        "hiraeth/app": "^2.0"
+        "hiraeth/routing": "^2.0"
     },
     "type": "opus-package",
     "extra": {
