@@ -40,6 +40,17 @@ class TemplateMiddleware implements Middleware
 
 
 	/**
+	 * Check whether or not a request is asynchronous
+	 */
+	static public function isAsync(Request $request)
+	{
+		return strtolower($request->getHeaderLine('X-Requested-With')) == 'xmlhttprequest'
+			|| $request->getHeaderLine('HX-Request')
+		;
+	}
+
+
+	/**
 	 * Create a new instance of the middleware
 	 */
 	public function __construct(Jin\Parser $jin, Manager $manager, StreamFactory $stream_factory)
@@ -71,7 +82,7 @@ class TemplateMiddleware implements Middleware
 				$alt  = '@pages' . $uri_path . '/index.html';
 			}
 
-			if ($request->getHeaderLine('X-Requested-With') == 'xmlhttprequest') {
+			if (static::isAsync($request)) {
 				$path = str_replace('/' . basename($path), '/%' . basename($path), $path);
 				$alt  = str_replace('/' . basename($alt),  '/%' . basename($alt),  $alt);
 			} else {
@@ -149,7 +160,7 @@ class TemplateMiddleware implements Middleware
 
 						$matches  = array_combine($matcher['mapping'], $matches);
 
-						if ($request->getHeaderLine('HX-Request')) {
+						if (static::isAsync($request)) {
 							$template = '%' . $template . '.html';
 						} else {
 							$template = '@' . $template . '.html';
@@ -169,6 +180,9 @@ class TemplateMiddleware implements Middleware
 									)->render()
 								))
 							;
+
+							break;
+
 						} catch (Exception $e) {
 							$current = $e;
 
