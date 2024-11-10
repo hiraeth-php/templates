@@ -2,6 +2,8 @@
 
 namespace Hiraeth\Templates;
 
+use RuntimeException;
+
 /**
  * An abstract template that provides basic data management
  */
@@ -21,6 +23,15 @@ abstract class AbstractTemplate implements Template
 	public function __toString(): string
 	{
 		return $this->render();
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function block(string $name, array $data = array()): static
+	{
+		throw new RuntimeException('Blocks are not supported on this template');
 	}
 
 

@@ -14,11 +14,13 @@ interface Template
 
 
 	/**
-	 * Get a block from the template
+	 * Select a specific template block for rendering
 	 *
 	 * This method should throw an exception if blocks are not supported
+	 *
+	 * @param mixed[] $data The full set of names and values to set in data on load
 	 */
-	public function block(string $name, array $context = array());
+	public function block(string $name, array $data = array()): static;
 
 
 	/**

@@ -42,7 +42,7 @@ class TemplateMiddleware implements Middleware
 	/**
 	 * Check whether or not a request is asynchronous
 	 */
-	static public function isAsync(Request $request)
+	static public function isAsync(Request $request): bool
 	{
 		return strtolower($request->getHeaderLine('X-Requested-With')) == 'xmlhttprequest'
 			|| $request->getHeaderLine('HX-Request')
