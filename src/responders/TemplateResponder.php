@@ -34,8 +34,8 @@ class TemplateResponder implements Routing\Responder
 	public function __invoke(Routing\Resolver $resolver): Response
 	{
 		/**
- *		 * @var Template
- *		 */
+		 * @var Template
+		 */
 		$template  = $resolver->getResult();
 		$response  = $resolver->getResponse();
 		$stream    = $this->streams->createStream($template->render());

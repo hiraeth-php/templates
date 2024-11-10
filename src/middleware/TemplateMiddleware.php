@@ -3,12 +3,15 @@
 namespace Hiraeth\Templates;
 
 use Dotink\Jin;
+use Hiraeth\Http;
 use Psr\Http\Server\MiddlewareInterface as Middleware;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\StreamFactoryInterface as StreamFactory;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+
 use RuntimeException;
+use Exception;
 
 /**
  * {@inheritDoc}
@@ -91,13 +94,27 @@ class TemplateMiddleware implements Middleware
 			if (!$matchers || !isset($matchers[$endpoint])) {
 				if ($this->manager->has($path)) {
 					if ($is_dir || basename($path) != '@index.html') {
-						$response = $response
-							->withStatus(200)
-							->withHeader('Content-Type', 'text/html; charset=utf-8')
-							->withBody($this->streamFactory->createStream(
-								$this->manager->load($path, ['request' => $request])->render()
-							))
-						;
+						try {
+								$response = $response
+								->withStatus(200)
+								->withHeader('Content-Type', 'text/html; charset=utf-8')
+								->withBody($this->streamFactory->createStream(
+									$this->manager->load($path, ['request' => $request])->render()
+								))
+							;
+						} catch (Exception $e) {
+							$current = $e;
+
+							while (!$current instanceof Http\Interrupt) {
+								$current = $current->getPrevious();
+
+								if (!$current) {
+									throw $e;
+								}
+							}
+
+							$response = $current->getResponse();
+						}
 					}
 
 				} elseif ($this->manager->has($alt)) {
@@ -126,7 +143,7 @@ class TemplateMiddleware implements Middleware
 
 						if (count($matches) != count($matcher['mapping'])) {
 							throw new RuntimeException(sprintf(
-								''
+								'Number of matches does not match number of mapped parameters'
 							));
 						}
 
@@ -138,19 +155,33 @@ class TemplateMiddleware implements Middleware
 							$template = '@' . $template . '.html';
 						}
 
-						$response = $response
-							->withStatus(200)
-							->withHeader('Content-Type', 'text/html; charset=utf-8')
-							->withBody($this->streamFactory->createStream(
-								$this->manager->load(
-									'@pages' . dirname($uri_path) . '/' . $template,
-									[
-										'request'    => $request,
-										'parameters' => $matches
-									]
-								)->render()
-							))
-						;
+						try {
+							$response = $response
+								->withStatus(200)
+								->withHeader('Content-Type', 'text/html; charset=utf-8')
+								->withBody($this->streamFactory->createStream(
+									$this->manager->load(
+										'@pages' . dirname($uri_path) . '/' . $template,
+										[
+											'request'    => $request,
+											'parameters' => $matches
+										]
+									)->render()
+								))
+							;
+						} catch (Exception $e) {
+							$current = $e;
+
+							while (!$current instanceof Http\Interrupt) {
+								$current = $current->getPrevious();
+
+								if (!$current) {
+									throw $e;
+								}
+							}
+
+							$response = $current->getResponse();
+						}
 					}
 				}
 			}
