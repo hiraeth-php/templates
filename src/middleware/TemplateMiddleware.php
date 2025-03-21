@@ -68,136 +68,120 @@ class TemplateMiddleware implements Middleware
 	{
 		$response = $handler->handle($request);
 
-		if ($response->getStatusCode() == 404) {
-			$matchers = array();
-			$uri_path = $request->getUri()->getPath();
-			$is_dir   = substr($uri_path, -1, 1) == '/';
+		if ($response->getStatusCode() != 404) {
+			return $response;
+		}
 
-			if ($is_dir) {
-				$path = '@pages' . $uri_path . 'index.html';
-				$alt  = '@pages' . substr($uri_path, 0, -1) . '.html';
+		$parameters = array();
+		$template   = '@pages';
+		$uri_path   = $request->getUri()->getPath();
+		$segments   = explode('/', trim($uri_path, '/'));
+		$is_dir     = substr($uri_path, -1, 1) == '/';
 
-			} else {
-				$path = '@pages' . $uri_path . '.html';
-				$alt  = '@pages' . $uri_path . '/index.html';
-			}
+		if (static::isAsync($request)) {
+			$type = '%';
+		} else {
+			$type = '@';
+		}
 
-			if (static::isAsync($request)) {
-				$path = str_replace('/' . basename($path), '/%' . basename($path), $path);
-				$alt  = str_replace('/' . basename($alt),  '/%' . basename($alt),  $alt);
-			} else {
-				$path = str_replace('/' . basename($path), '/@' . basename($path), $path);
-				$alt  = str_replace('/' . basename($alt),  '/@' . basename($alt),  $alt);
-			}
+		while (count($segments)) {
+			$segment = array_shift($segments);
+			$config  = $template . '/~matchers.jin';
 
-			if ($is_dir) {
-				$matcher_config = $path . '~matchers.jin';
-			} else {
-				$matcher_config = dirname($path) . '/' . '~matchers.jin';
-			}
+			if ($this->manager->has($config)) {
+				$matchers = $this->jin->parse($this->manager->load($config)->render([
+					'request'    => $request,
+					'parameters' => $parameters
+				]));
 
-			if ($this->manager->has($matcher_config)) {
-				$matchers = $this->jin->parse($this->manager->load($matcher_config)->render());
-				$endpoint = basename($uri_path);
-				$matches  = array();
-			}
-
-			if (!$matchers || !isset($matchers[$endpoint])) {
-				if ($this->manager->has($path)) {
-					if ($is_dir || basename($path) != '@index.html') {
-						try {
-								$response = $response
-								->withStatus(200)
-								->withHeader('Content-Type', 'text/html; charset=utf-8')
-								->withBody($this->streamFactory->createStream(
-									$this->manager->load($path, ['request' => $request])->render()
-								))
-							;
-						} catch (Exception $e) {
-							$current = $e;
-
-							while (!$current instanceof Http\Interrupt) {
-								$current = $current->getPrevious();
-
-								if (!$current) {
-									throw $e;
-								}
-							}
-
-							$response = $current->getResponse();
-						}
+				foreach ($matchers as $branch => $matcher) {
+					if (!in_array($type, $matcher['include'] ?? ['%', '@'])) {
+						continue;
 					}
 
-				} elseif ($this->manager->has($alt)) {
-					$response = $response->withStatus(301);
-
-					if ($is_dir) {
-						$response = $response->withHeader(
-							'Location',
-							(string) $request->getUri()->withPath(substr($uri_path, 0, -1))
-						);
-
-					} else {
-						$response = $response->withHeader(
-							'Location',
-							(string) $request->getUri()->withPath($uri_path . '/')
-						);
+					if (!preg_match('#' . $matcher['pattern'] . '#', $segment, $matches)) {
+						continue;
 					}
 
-				} else {
-					foreach ($matchers as $template => $matcher) {
-						if (!preg_match('#' . $matcher['pattern'] . '#', $endpoint, $matches)) {
-							continue;
-						}
+					array_shift($matches);
 
-						array_shift($matches);
+					if (count($matches) != count($matcher['mapping'] ?? [])) {
+						throw new RuntimeException(sprintf(
+							'Number of matches does not match number of mapped parameters'
+						));
+					}
 
-						if (count($matches) != count($matcher['mapping'])) {
-							throw new RuntimeException(sprintf(
-								'Number of matches does not match number of mapped parameters'
-							));
-						}
+					$segment    = $branch;
+					$parameters = array_merge(
+						$parameters,
+						array_combine($matcher['mapping'] ?? [], $matches)
+					);
 
-						$matches  = array_combine($matcher['mapping'], $matches);
-
-						if (static::isAsync($request)) {
-							$template = '%' . $template . '.html';
-						} else {
-							$template = '@' . $template . '.html';
-						}
-
-						try {
-							$response = $response
-								->withStatus(200)
-								->withHeader('Content-Type', 'text/html; charset=utf-8')
-								->withBody($this->streamFactory->createStream(
-									$this->manager->load(
-										'@pages' . dirname($uri_path) . '/' . $template,
-										[
-											'request'    => $request,
-											'parameters' => $matches
-										]
-									)->render()
-								))
-							;
-
-							break;
-
-						} catch (Exception $e) {
-							$current = $e;
-
-							while (!$current instanceof Http\Interrupt) {
-								$current = $current->getPrevious();
-
-								if (!$current) {
-									throw $e;
-								}
-							}
-
-							$response = $current->getResponse();
-						}
+					if ($matcher['consume'] ?? FALSE) {
+						$is_dir   = substr($segment, -1, 1) == '/';
+						$segments = [];
 					}
 				}
+			}
+
+			$template .= '/' . $segment;
+		}
+
+		$template = rtrim($template, '/');
+
+		if ($is_dir) {
+			$try_template = $template . '/' . $type . 'index.html';
+			$alt_template = dirname($template) . '/' . $type . basename($template) . '.html';
+		} else {
+			$alt_template = $template . '/' . $type . 'index.html';
+			$try_template = dirname($template) . '/' . $type . basename($template) . '.html';
+		}
+
+		if ($this->manager->has($try_template)) {
+			try {
+				return $response
+					->withStatus(200)
+					->withHeader('Content-Type', 'text/html; charset=utf-8')
+					->withBody($this->streamFactory->createStream(
+						$this->manager->load(
+							$try_template,
+							[
+								'request'    => $request,
+								'parameters' => $parameters
+							]
+						)->render()
+					))
+				;
+
+			} catch (Exception $e) {
+				$current = $e;
+
+				while (!$current instanceof Http\Interrupt) {
+					$current = $current->getPrevious();
+
+					if (!$current) {
+						throw $e;
+					}
+				}
+
+				return $current->getResponse();
+			}
+		}
+
+		if ($this->manager->has($alt_template)) {
+			$response = $response->withStatus(301);
+
+			if ($is_dir) {
+				return $response->withHeader(
+					'Location',
+					(string) $request->getUri()->withPath(substr($uri_path, 0, -1))
+				);
+
+			} else {
+				return $response->withHeader(
+					'Location',
+					(string) $request->getUri()->withPath($uri_path . '/')
+				);
 			}
 		}
 
