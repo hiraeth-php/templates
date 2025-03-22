@@ -46,7 +46,7 @@ class TemplateAdapter implements Routing\Adapter
 	public function match(Routing\Resolver $resolver): bool
 	{
 		if (is_string($target = $resolver->getRoute()->getTarget())) {
-			return strpos($target, '@') === 0;
+			return str_starts_with($target, '@');
 		}
 
 		return FALSE;

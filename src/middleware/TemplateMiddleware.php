@@ -72,11 +72,11 @@ class TemplateMiddleware implements Middleware
 			return $response;
 		}
 
-		$parameters = array();
+		$parameters = [];
 		$template   = '@pages';
 		$uri_path   = $request->getUri()->getPath();
-		$segments   = explode('/', trim($uri_path, '/'));
-		$is_dir     = substr($uri_path, -1, 1) == '/';
+		$segments   = explode('/', trim((string) $uri_path, '/'));
+		$is_dir     = str_ends_with((string) $uri_path, '/');
 
 		if (static::isAsync($request)) {
 			$type = '%';
@@ -99,7 +99,7 @@ class TemplateMiddleware implements Middleware
 						continue;
 					}
 
-					if (!preg_match('#' . $matcher['pattern'] . '#', $segment, $matches)) {
+					if (!preg_match('#' . $matcher['pattern'] . '#', (string) $segment, $matches)) {
 						continue;
 					}
 
@@ -118,7 +118,7 @@ class TemplateMiddleware implements Middleware
 					);
 
 					if ($matcher['consume'] ?? FALSE) {
-						$is_dir   = substr($segment, -1, 1) == '/';
+						$is_dir   = str_ends_with((string) $segment, '/');
 						$segments = [];
 					}
 				}
@@ -174,7 +174,7 @@ class TemplateMiddleware implements Middleware
 			if ($is_dir) {
 				return $response->withHeader(
 					'Location',
-					(string) $request->getUri()->withPath(substr($uri_path, 0, -1))
+					(string) $request->getUri()->withPath(substr((string) $uri_path, 0, -1))
 				);
 
 			} else {

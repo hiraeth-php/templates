@@ -20,7 +20,7 @@ interface Template
 	 *
 	 * @param mixed[] $data The full set of names and values to set in data on load
 	 */
-	public function block(string $name, array $data = array()): static;
+	public function block(string $name, array $data = []): static;
 
 
 	/**

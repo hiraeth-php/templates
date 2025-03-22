@@ -39,6 +39,7 @@
 	;
 
 	paths = {
+		"vendor": "vendor",
 		"pages": "resources/pages",
 		"layouts": "resources/layouts"
 	}

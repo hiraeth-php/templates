@@ -14,7 +14,7 @@ abstract class AbstractTemplate implements Template
 	 *
 	 * @var mixed[]
 	 */
-	protected $data = array();
+	protected $data = [];
 
 
 	/**
@@ -29,7 +29,7 @@ abstract class AbstractTemplate implements Template
 	/**
 	 * {@inheritDoc}
 	 */
-	public function block(string $name, array $data = array()): static
+	public function block(string $name, array $data = []): static
 	{
 		throw new RuntimeException('Blocks are not supported on this template');
 	}

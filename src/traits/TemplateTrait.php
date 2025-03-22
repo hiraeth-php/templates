@@ -20,7 +20,7 @@ trait TemplateTrait
 	 *
 	 * @param array<string, mixed> $data
 	 */
-	protected function template(string $template_path, array $data = array()): Template
+	protected function template(string $template_path, array $data = []): Template
 	{
 		if (!$this->templates) {
 			throw new RuntimeException(sprintf(
