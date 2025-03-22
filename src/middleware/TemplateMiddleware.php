@@ -40,24 +40,51 @@ class TemplateMiddleware implements Middleware
 
 
 	/**
+	 * The URL Generator
+	 *
+	 * @var Http\UrlGenerator|null
+	 */
+	protected $urlGenerator = NULL;
+
+
+	/**
+	 * Check whether or not a request is traditional AJAX
+	 */
+	static public function isAjax(Request $request): bool
+	{
+		return strtolower($request->getHeaderLine('X-Requested-With')) == 'xmlhttprequest';
+	}
+
+
+	/**
 	 * Check whether or not a request is asynchronous
 	 */
 	static public function isAsync(Request $request): bool
 	{
-		return strtolower($request->getHeaderLine('X-Requested-With')) == 'xmlhttprequest'
-			|| $request->getHeaderLine('HX-Request')
+		return static::isHTMX($request)
+			|| static::isAjax($request)
 		;
+	}
+
+
+	/**
+	 * Check whether or not a request is from HTMX
+	 */
+	static public function isHTMX(Request $request): bool
+	{
+		return $request->getHeaderLine('HX-Request');
 	}
 
 
 	/**
 	 * Create a new instance of the middleware
 	 */
-	public function __construct(Jin\Parser $jin, Manager $manager, StreamFactory $stream_factory)
+	public function __construct(Jin\Parser $jin, Manager $manager, StreamFactory $stream_factory, Http\UrlGenerator $url_generator)
 	{
 		$this->jin           = $jin;
 		$this->manager       = $manager;
 		$this->streamFactory = $stream_factory;
+		$this->urlGenerator  = $url_generator;
 	}
 
 
@@ -170,19 +197,22 @@ class TemplateMiddleware implements Middleware
 
 		if ($this->manager->has($alt_template)) {
 			$response = $response->withStatus(301);
+			$location = $request->getUri()->withPath(
+				$this->urlGenerator->call(
+					$is_dir
+						? substr((string) $uri_path, 0, -1)
+						: $uri_path . '/'
+				)
+			);
 
-			if ($is_dir) {
-				return $response->withHeader(
-					'Location',
-					(string) $request->getUri()->withPath(substr((string) $uri_path, 0, -1))
-				);
-
-			} else {
-				return $response->withHeader(
-					'Location',
-					(string) $request->getUri()->withPath($uri_path . '/')
-				);
+			if (static::isHTMX($request)) {
+				return $response
+					->withStatus(205)
+					->withHeader('HX-Redirect', $location->getPath())
+				;
 			}
+
+			return $response->withHeader('Location', (string) $location);
 		}
 
 		return $response;
