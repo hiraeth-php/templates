@@ -166,17 +166,21 @@ class TemplateMiddleware implements Middleware
 
 		if ($this->manager->has($try_template)) {
 			try {
+				$template = $this->manager->load(
+					$try_template,
+					[
+						'request'    => $request,
+						'parameters' => $parameters
+					]
+				);
+
 				return $response
 					->withStatus(200)
 					->withHeader('Content-Type', 'text/html; charset=utf-8')
 					->withBody($this->streamFactory->createStream(
-						$this->manager->load(
-							$try_template,
-							[
-								'request'    => $request,
-								'parameters' => $parameters
-							]
-						)->render()
+						static::isAsync($request)
+							? preg_replace('~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $template->render())
+							: $template->render()
 					))
 				;
 
