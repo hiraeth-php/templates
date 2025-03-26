@@ -177,11 +177,7 @@ class TemplateMiddleware implements Middleware
 				return $response
 					->withStatus(200)
 					->withHeader('Content-Type', 'text/html; charset=utf-8')
-					->withBody($this->streamFactory->createStream(
-						static::isAsync($request)
-							? preg_replace('~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $template->render())
-							: $template->render()
-					))
+					->withBody($this->streamFactory->createStream($template->render()))
 				;
 
 			} catch (Exception $e) {
