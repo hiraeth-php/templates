@@ -130,7 +130,9 @@ class TemplateMiddleware implements Middleware
 						continue;
 					}
 
-					array_shift($matches);
+					if (count($matches) > 1) {
+						array_shift($matches);
+					}
 
 					if (count($matches) != count($matcher['mapping'] ?? [])) {
 						throw new RuntimeException(sprintf(
