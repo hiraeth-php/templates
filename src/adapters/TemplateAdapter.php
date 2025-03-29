@@ -32,8 +32,8 @@ class TemplateAdapter implements Routing\Adapter
 		return function() use ($resolver) {
 			if ($this->manager->has($resolver->getRoute()->getTarget())) {
 				return $this->manager->load($resolver->getRoute()->getTarget(), [
-					'route'   => $resolver->getRoute(),
-					'request' => $resolver->getRequest()
+					'request'    => $resolver->getRequest(),
+					'parameters' => $resolver->getRoute()->getParameters()
 				]);
 			}
 		};
