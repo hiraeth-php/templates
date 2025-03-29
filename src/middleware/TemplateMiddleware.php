@@ -126,13 +126,11 @@ class TemplateMiddleware implements Middleware
 						continue;
 					}
 
-					if (!preg_match('#' . $matcher['pattern'] . '#', (string) $segment, $matches)) {
+					if (!preg_match('#(' . $matcher['pattern'] . ')#', (string) $segment, $matches)) {
 						continue;
 					}
 
-					if (count($matches) > 1) {
-						array_shift($matches);
-					}
+					array_shift($matches);
 
 					if (count($matches) != count($matcher['mapping'] ?? [])) {
 						throw new RuntimeException(sprintf(
