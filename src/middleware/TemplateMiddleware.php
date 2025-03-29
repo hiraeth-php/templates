@@ -112,7 +112,7 @@ class TemplateMiddleware implements Middleware
 		}
 
 		while (count($segments)) {
-			$segment = array_shift($segments);
+			$segment = urldecode(array_shift($segments));
 			$config  = $template . '/~matchers.jin';
 
 			if ($this->manager->has($config)) {
