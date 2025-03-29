@@ -126,7 +126,7 @@ class TemplateMiddleware implements Middleware
 						continue;
 					}
 
-					if (!preg_match('#(' . $matcher['pattern'] . ')#', (string) $segment, $matches)) {
+					if (!preg_match('#' . $matcher['pattern'] . '#', (string) $segment, $matches)) {
 						continue;
 					}
 
