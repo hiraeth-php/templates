@@ -53,7 +53,7 @@ class Mock
 				static::$building[]  = $ref;
 				static::$data[$data] = new ArrayObject();
 
-				$this->app->get(Manager::class)->load(sprintf('mocks/%s.twig', $ref))->render();
+				$this->app->get(Manager::class)->load(sprintf('@mocks/%s.twig', $ref))->render();
 
 				if (!isset(static::$data[$ref]['__set'])) {
 					throw new InvalidArgumentException(sprintf(
