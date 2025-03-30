@@ -40,6 +40,15 @@
 
 	paths = {
 		"vendor": "vendor",
+		"layouts": "resources/layouts",
+		"mocks": "resources/mocks",
 		"pages": "resources/pages",
-		"layouts": "resources/layouts"
+	}
+
+[twig]
+
+	functions = {
+		"mock": {
+			"target": "Hiraeth\Templates\Mock"
+		}
 	}
