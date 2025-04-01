@@ -44,11 +44,3 @@
 		"mocks": "resources/mocks",
 		"pages": "resources/pages",
 	}
-
-[twig]
-
-	functions = {
-		"mock": {
-			"target": "Hiraeth\Templates\Mock"
-		}
-	}
