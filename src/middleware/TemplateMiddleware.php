@@ -155,8 +155,8 @@ class TemplateMiddleware implements Middleware
 						$segment = $branch;
 
 						if ($matcher['consume'] ?? FALSE) {
-							$is_dir   = str_ends_with($segment, '/');
-							$consumed = implode("/", $segments);
+							$is_dir   = FALSE;
+							$consumed = '/' . implode("/", $segments) . ($is_dir ? '/' : '');
 							$segments = [];
 						}
 					}
