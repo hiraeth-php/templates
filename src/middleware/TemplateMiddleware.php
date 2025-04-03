@@ -100,6 +100,9 @@ class TemplateMiddleware implements Middleware
 		}
 
 		$parameters = [];
+		$proxy_path = NULL;
+		$proxy_type = NULL;
+		$consumed   = NULL;
 		$template   = '@pages';
 		$uri_path   = $request->getUri()->getPath();
 		$segments   = explode('/', trim((string) $uri_path, '/'));
@@ -138,23 +141,32 @@ class TemplateMiddleware implements Middleware
 						));
 					}
 
-					$segment    = $branch;
 					$parameters = array_merge(
 						$parameters,
 						array_combine($matcher['mapping'] ?? [], $matches)
 					);
 
-					if ($matcher['consume'] ?? FALSE) {
-						$is_dir   = str_ends_with((string) $segment, '/');
-						$segments = [];
+					if ($matcher['proxies'][$type] ?? FALSE) {
+						$proxy_type = $type;
+						$proxy_path = $template . '/' . rtrim($branch, '/');
+						$type       = $matcher['proxies'][$type];
+
+					} else {
+						$segment = $branch;
+
+						if ($matcher['consume'] ?? FALSE) {
+							$is_dir   = str_ends_with($segment, '/');
+							$consumed = implode("/", $segments);
+							$segments = [];
+						}
 					}
+
+					break;
 				}
 			}
 
-			$template .= '/' . $segment;
+			$template .= '/' . rtrim($segment, '/');
 		}
-
-		$template = rtrim($template, '/');
 
 		if ($is_dir) {
 			$try_template = $template . '/' . $type . 'index.html';
@@ -166,13 +178,27 @@ class TemplateMiddleware implements Middleware
 
 		if ($this->manager->has($try_template)) {
 			try {
-				$template = $this->manager->load(
-					$try_template,
-					[
-						'request'    => $request,
-						'parameters' => $parameters
-					]
-				);
+				$data = [
+					'request'    => $request->withAttribute('_consumed', $consumed),
+					'parameters' => $parameters
+				];
+
+				if (!$proxy_path) {
+					$template = $this->manager->load($try_template, $data);
+
+				} elseif (str_ends_with($proxy_path, '/')) {
+					$template = $this->manager->load(
+						$proxy_path . $proxy_type . 'index.html',
+						$data
+					);
+
+				} else {
+					$template = $this->manager->load(
+						dirname($proxy_path) . '/' . $proxy_type . basename($proxy_path) . '.html',
+						$data
+					);
+
+				}
 
 				return $response
 					->withStatus(200)
