@@ -72,7 +72,8 @@ class TemplateMiddleware implements Middleware
 	 */
 	static public function isHTMX(Request $request): bool
 	{
-		return $request->getHeaderLine('HX-Request');
+		return $request->getHeaderLine('HX-Request')
+			&& !$request->getHeaderLine('HX-Boosted');
 	}
 
 
@@ -100,8 +101,6 @@ class TemplateMiddleware implements Middleware
 		}
 
 		$parameters = [];
-		$proxy_path = NULL;
-		$proxy_type = NULL;
 		$consumed   = NULL;
 		$template   = '@pages';
 		$uri_path   = $request->getUri()->getPath();
@@ -141,24 +140,16 @@ class TemplateMiddleware implements Middleware
 						));
 					}
 
+					$segment    = $branch;
 					$parameters = array_merge(
 						$parameters,
 						array_combine($matcher['mapping'] ?? [], $matches)
 					);
 
-					if ($matcher['proxies'][$type] ?? FALSE) {
-						$proxy_type = $type;
-						$proxy_path = $template . '/' . rtrim($branch, '/');
-						$type       = $matcher['proxies'][$type];
-
-					} else {
-						$segment = $branch;
-
-						if ($matcher['consume'] ?? FALSE) {
-							$is_dir   = FALSE;
-							$consumed = '/' . implode("/", $segments) . ($is_dir ? '/' : '');
-							$segments = [];
-						}
+					if ($matcher['consume'] ?? FALSE) {
+						$is_dir   = FALSE;
+						$consumed = '/' . implode("/", $segments) . ($is_dir ? '/' : '');
+						$segments = [];
 					}
 
 					break;
@@ -178,27 +169,12 @@ class TemplateMiddleware implements Middleware
 
 		if ($this->manager->has($try_template)) {
 			try {
-				$data = [
-					'request'    => $request->withAttribute('_consumed', $consumed),
-					'parameters' => $parameters
-				];
-
-				if (!$proxy_path) {
-					$template = $this->manager->load($try_template, $data);
-
-				} elseif (str_ends_with($proxy_path, '/')) {
-					$template = $this->manager->load(
-						$proxy_path . $proxy_type . 'index.html',
-						$data
-					);
-
-				} else {
-					$template = $this->manager->load(
-						dirname($proxy_path) . '/' . $proxy_type . basename($proxy_path) . '.html',
-						$data
-					);
-
-				}
+				$template = $this->manager->load($try_template, [
+					'parameters' => $parameters,
+					'request'    => $request
+						->withAttribute('_async', static::isAsync($request))
+						->withAttribute('_consumed', $consumed)
+				]);
 
 				return $response
 					->withStatus(200)
@@ -206,18 +182,9 @@ class TemplateMiddleware implements Middleware
 					->withBody($this->streamFactory->createStream($template->render()))
 				;
 
-			} catch (Exception $e) {
-				$current = $e;
+			} catch (Http\Interrupt $e) {
+				return $e->getResponse();
 
-				while (!$current instanceof Http\Interrupt) {
-					$current = $current->getPrevious();
-
-					if (!$current) {
-						throw $e;
-					}
-				}
-
-				return $current->getResponse();
 			}
 		}
 
