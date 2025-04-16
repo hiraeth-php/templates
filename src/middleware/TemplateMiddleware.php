@@ -174,14 +174,16 @@ class TemplateMiddleware implements Middleware
 					'parameters' => $parameters,
 					'response'   => $response,
 					'request'    => $request
-						->withAttribute('_async', static::isAsync($request))
-						->withAttribute('_consumed', $consumed)
+						->withAttribute('_async_', static::isAsync($request))
+						->withAttribute('_consumed_', $consumed)
 				]);
 
 				return $response
-					->withStatus(200)
+					->withBody($this->streamFactory->createStream(
+						$template->set('this', $template)->render())
+					)
 					->withHeader('Content-Type', 'text/html; charset=utf-8')
-					->withBody($this->streamFactory->createStream($template->render()))
+					->withStatus($template->get('_status_') ?? 200)
 				;
 
 			} catch (Exception $e) {
