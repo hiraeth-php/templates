@@ -182,9 +182,19 @@ class TemplateMiddleware implements Middleware
 					->withBody($this->streamFactory->createStream($template->render()))
 				;
 
-			} catch (Http\Interrupt $e) {
-				return $e->getResponse();
+			} catch (Exception $e) {
+				//
+				// Templates will throw exception on render, we want to make sure they're not
+				// masking our Interrupt request
+				//
 
+				for ($current = $e; $current; $current = $current->getPrevious()) {
+					if ($current instanceof Http\Interrupt) {
+						return $current->getResponse();
+					}
+				}
+
+				throw $e;
 			}
 		}
 
