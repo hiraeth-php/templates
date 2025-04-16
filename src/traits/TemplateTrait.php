@@ -41,5 +41,7 @@ trait TemplateTrait
 			'request'  => $this->request,
 			'response' => $this->response,
 		]);
+
+		return $template;
 	}
 }
