@@ -120,6 +120,7 @@ class TemplateMiddleware implements Middleware
 			if ($this->manager->has($config)) {
 				$matchers = $this->jin->parse($this->manager->load($config)->render([
 					'request'    => $request,
+					'response'   => $response,
 					'parameters' => $parameters
 				]));
 
@@ -171,6 +172,7 @@ class TemplateMiddleware implements Middleware
 			try {
 				$template = $this->manager->load($try_template, [
 					'parameters' => $parameters,
+					'response'   => $response,
 					'request'    => $request
 						->withAttribute('_async', static::isAsync($request))
 						->withAttribute('_consumed', $consumed)
