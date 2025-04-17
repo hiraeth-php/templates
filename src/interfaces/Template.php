@@ -2,10 +2,12 @@
 
 namespace Hiraeth\Templates;
 
+use Stringable;
+
 /**
  * An abstract template interface for bridging diverse template engines
  */
-interface Template
+interface Template extends Stringable
 {
 	/**
 	 * Must be an alias to render()
@@ -18,7 +20,8 @@ interface Template
 	 *
 	 * This method should throw an exception if blocks are not supported
 	 *
-	 * @param mixed[] $data The full set of names and values to set in data on load
+	 * @param array<mixed> $data The full set of names and values to set in data on load
+	 * @return static The object for method chaining
 	 */
 	public function block(string $name, array $data = []): static;
 
@@ -29,19 +32,21 @@ interface Template
 	 * @param string $name The name of the data variable
 	 * @return mixed The value of the data variable
 	 */
-	public function get(string $name);
+	public function get(string $name): mixed;
 
 
 	/**
 	 * Get all the template's data
 	 *
-	 * @return mixed[] The value of all the data variables
+	 * @return array<mixed> The value of all the data variables
 	 */
 	public function getAll(): array;
 
 
 	/**
-	 * Get the extension for the template
+	 * Get the filename extension for the template as a string
+	 *
+	 * @return string The template filename extension
 	 */
 	public function getExtension(): string;
 
@@ -51,22 +56,24 @@ interface Template
 	 *
 	 * @param string $name The name of the variable to set in data
 	 * @param mixed $value The value of the variable to set in data
-	 * @return self
+	 * @return static The object for method chaining
 	 */
-	public function set(string $name, $value): Template;
+	public function set(string $name, mixed $value): static;
 
 
 	/**
 	 * Set all data in the given array on the template's data
 	 *
-	 * @param mixed[] $data The full set of names and values to set in data
-	 * @return self
+	 * @param array<mixed> $data The full set of names and values to set in data
+	 * @return static The object for method chaining
 	 */
-	public function setAll(array $data): Template;
+	public function setAll(array $data): static;
 
 
 	/**
-	 * Render the template
+	 * Render the template to a string
+	 *
+	 * @return string The rendered template
 	 */
 	public function render(): string;
 }

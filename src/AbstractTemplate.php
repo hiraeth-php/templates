@@ -38,7 +38,7 @@ abstract class AbstractTemplate implements Template
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get(string $name)
+	public function get(string $name): mixed
 	{
 		if (array_key_exists($name, $this->data)) {
 			return $this->data[$name];
@@ -60,7 +60,7 @@ abstract class AbstractTemplate implements Template
 	/**
 	 * {@inheritDoc}
 	 */
-	public function set(string $name, $value): Template
+	public function set(string $name, mixed $value): static
 	{
 		$this->data[$name] = $value;
 
@@ -71,7 +71,7 @@ abstract class AbstractTemplate implements Template
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setAll(array $data): Template
+	public function setAll(array $data): static
 	{
 		$this->data = $data + $this->data;
 

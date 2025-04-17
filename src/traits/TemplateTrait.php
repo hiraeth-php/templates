@@ -19,6 +19,15 @@ trait TemplateTrait
 	 */
 	protected $template;
 
+	/**
+	 * Overloadable method to get template context from the class we're installed on
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function getTemplateContext(): array
+	{
+		return [];
+	}
 
 	/**
 	 * Get a loaded template with data
@@ -34,14 +43,12 @@ trait TemplateTrait
 			));
 		}
 
-		$template = $this->templates->load($template_path, $data);
+		$template = $this->templates->load($template_path);
 
-		$this->template->setAll([
-			'this'     => $template,
-			'request'  => $this->request,
-			'response' => $this->response,
+		return $template->setAll([
+			'this' => $template,
+			...$this->getTemplateContext(),
+			...$data
 		]);
-
-		return $template;
 	}
 }
