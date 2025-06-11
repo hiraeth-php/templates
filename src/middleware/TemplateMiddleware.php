@@ -117,7 +117,7 @@ class TemplateMiddleware implements Middleware
 			$segment = urldecode(array_shift($segments));
 			$config  = $template . '/~matchers.jin';
 
-			if ($segment[0] == '_') {
+			if (strlen($segment) && $segment[0] == '_') {
 				return $response;
 			}
 
