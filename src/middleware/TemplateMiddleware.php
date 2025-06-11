@@ -117,6 +117,10 @@ class TemplateMiddleware implements Middleware
 			$segment = urldecode(array_shift($segments));
 			$config  = $template . '/~matchers.jin';
 
+			if ($segment[0] == '_') {
+				return $response;
+			}
+
 			if ($this->manager->has($config)) {
 				$matchers = $this->jin->parse($this->manager->load($config)->render([
 					'request'    => $request,
@@ -158,6 +162,10 @@ class TemplateMiddleware implements Middleware
 			}
 
 			$template .= '/' . rtrim($segment, '/');
+		}
+
+		foreach ($parameters as $name => $value) {
+			$template = str_replace('&' . $name, $value, $template);
 		}
 
 		if ($is_dir) {
